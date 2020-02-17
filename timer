@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import os
+from pathlib import Path
+import signal
+import sys
+
+
+DEFAULT_TASK = 'unknown'
+WORKING_DIR = '.timer'
+
+
+def main():
+    home_dir = str(Path.home())
+    provide_writable_work_dir(home_dir)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.pause()
+
+
+def signal_handler(sig, frame):
+    print('sigint')
+    sys.exit(0)
+
+
+def fatal(message):
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def provide_writable_work_dir(base_dir):
+    work_dir = os.path.join(base_dir, WORKING_DIR)
+    if not os.path.exists(work_dir):
+        try:
+            os.mkdir(work_dir)
+        except OSError:
+            fatal('unable to create working directory {}'.format(work_dir))
+
+
+if __name__ == '__main__':
+    main()
